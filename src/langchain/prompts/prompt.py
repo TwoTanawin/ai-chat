@@ -1,22 +1,17 @@
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+# prompts/prompt.py
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 class PromptRegistry:
     def __init__(self):
         self.prompt_templates = {
             "chat": ChatPromptTemplate.from_messages([
-                SystemMessagePromptTemplate.from_template(
-                    """
-    "You are a concise, helpful assistant. "
-    "Answer clearly. If unsure, ask for clarification."
-                    """
+                ("system",
+                 "You are a concise, helpful assistant. "
+                 "Answer clearly. If unsure, ask for clarification."
                 ),
-                HumanMessagePromptTemplate.from_template(
-                    """
-
-    {human_input}
-
-                    """
-                )
+                # <-- This is where the running conversation will be injected
+                MessagesPlaceholder(variable_name="history"),
+                ("human", "{human_input}"),
             ])
         }
 
