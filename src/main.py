@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
 from .langchain.llm_model_loader import LLMLoader
@@ -21,10 +22,9 @@ class AIChat:
         self.llm = LLMLoader.load(client=self.bedrock_client)
         self.prompt_registry = PromptRegistry()
 
-        chat_prompt = self.prompt_registry.get_prompt_templates("chat")  # has {history} + {human_input}
+        chat_prompt = self.prompt_registry.get_prompt_templates("chat")
         base_chain = chat_prompt | self.llm
 
-        # Instantiate once and reuse (reads env by default)
         self.memory = RedisMemory()
 
         def get_history(session_id: str):
@@ -37,25 +37,29 @@ class AIChat:
             history_messages_key="history",
         )
 
-    def runner(self):
-        user_input = input("Ask : ").strip()
+    async def runner(self):
+        user_input = await asyncio.to_thread(input, "Ask : ")
+        user_input = user_input.strip()
+
         if not user_input:
             return ""
-        ai_msg = self.chat.invoke(
+
+        ai_msg = await self.chat.ainvoke(
             {"human_input": user_input},
             config={"configurable": {"session_id": self.session_id}},
         )
         return ai_msg.content
 
-def main():
+async def main():
+    ai_chat = AIChat(session_id="cli-session-1")
     try:
-        ai_chat = AIChat(session_id="cli-session-1")
         while True:
-            print(ai_chat.runner())
+            result = await ai_chat.runner()
+            print(result)
     except (KeyboardInterrupt, EOFError):
         print("\nBye!")
     except Exception as e:
         print(f"Error : {e}")
-        
-if __name__=="__main__":
-    main()
+
+if __name__ == "__main__":
+    asyncio.run(main())
