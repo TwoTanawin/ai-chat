@@ -1,0 +1,39 @@
+qdrant-client
+# transformers
+# torch 
+# torchvision
+# torchaudio
+langchain 
+faiss-cpu
+langchain-huggingface
+langchain-qdrant
+langchain[groq]
+dotenv
+langchain-groq
+langchain-community
+chardet
+langchain-ollama
+Django
+djangorestframework
+django-cors-headers
+# langchain_aws
+boto3
+hurry.filesize
+drf-yasg
+gunicorn
+awscli
+beautifulsoup4
+apache-airflow
+scraper
+boto3
+langchain-aws
+langchain-core
+redis
+aiofiles
+langgraph
+pyppeteer
+python-decouple==3.8
+Faker
+pymongo
+uvicorn
+gunicorn
